@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
     },
     email: {
         type: String, 
-        required: [true, 'Please provide name'], 
+        required: [true, 'Please provide email'], 
         match: [
             /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             'Please provide a valid email',
@@ -25,9 +25,15 @@ const UserSchema = new mongoose.Schema({
     }
 })
 
-UserSchema.pre('save', async function() {
+// middleware
+
+UserSchema.pre('save', async function(next) {
+    if (!this.isModified('password')) {
+        return next()   
+    }
     const salt = await bcrypt.genSalt(10)
     this.password = await bcrypt.hash(this.password, salt)
+    next()
 })
 
 UserSchema.methods.createJWT = function() {

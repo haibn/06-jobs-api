@@ -10,6 +10,12 @@ const getSpreadsheet = async (req, res) => {
 }
 
 const addSpreadsheet = async (req, res) => {
+    // check if name and spreadsheetId are provided
+    const { spreadsheetId, name } = req.body
+    if (!spreadsheetId || !name) {
+        throw new BadRequestError('spreadsheetId and name are required')
+    }
+
     // attach logged-in user from auth middleware
     req.body.userId = req.user.userId
 

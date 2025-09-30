@@ -3,6 +3,11 @@ require('express-async-errors');
 const express = require('express');
 const app = express();
 
+// check if JWT_SECRET exists
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET is missing from environment variables');
+}
+
 // connectDB
 const connectDB = require('./db/connect')
 const authenticateUser = require('./middleware/authentication')
