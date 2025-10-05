@@ -1,22 +1,23 @@
 const mongoose = require('mongoose')
 
 const spreadsheetSchema = new mongoose.Schema({
-    userId: { 
+    createdBy: { 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User' 
+        ref: 'User',
+        required: [true, 'Please provide user']
     },
-    spreadsheetId: { 
+    googleSpreadsheetId: { 
         type: String, 
-        required: true 
+        required: [true, 'Please provide spreadsheet id'] 
     },
     name: { 
         type: String, 
-        required: true 
+        required: [true, 'Please provide spreadsheet name'] 
     },
     mappings: { 
         type: Object, 
         default: {} 
     }, // { customers: "Sheet1!A:D" }
-})
+}, { timestamps: true })
 
 module.exports = mongoose.model('Spreadsheet', spreadsheetSchema);
