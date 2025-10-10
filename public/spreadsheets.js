@@ -9,27 +9,29 @@ import {
 import { showLoginRegister } from "./loginRegister.js";
 import { showAddEdit } from "./addEdit.js";
 
-let jobsDiv = null;
-let jobsTable = null;
-let jobsTableHeader = null;
+let spreadsheetsDiv = null;
+let spreadsheetsTable = null;
+let spreadsheetsTableHeader = null;
 
-export const handleJobs = () => {
-  jobsDiv = document.getElementById("jobs");
+export const handleSpreadsheets = () => {
+  spreadsheetsDiv = document.getElementById("spreadsheets");
   const logoff = document.getElementById("logoff");
-  const addJob = document.getElementById("add-job");
-  jobsTable = document.getElementById("jobs-table");
-  jobsTableHeader = document.getElementById("jobs-table-header");
+  const addSpreadsheet = document.getElementById("add-spreadsheet");
+  spreadsheetsTable = document.getElementById("spreadsheets-table");
+  spreadsheetsTableHeader = document.getElementById(
+    "spreadsheets-table-header"
+  );
 
-  jobsDiv.addEventListener("click", (e) => {
+  spreadsheetsDiv.addEventListener("click", (e) => {
     if (inputEnabled && e.target.nodeName === "BUTTON") {
-      if (e.target === addJob) {
+      if (e.target === addSpreadsheet) {
         showAddEdit(null);
       } else if (e.target === logoff) {
         setToken(null);
 
         message.textContent = "You have been logged off.";
 
-        jobsTable.replaceChildren([jobsTableHeader]);
+        spreadsheetsTable.replaceChildren([spreadsheetsTableHeader]);
         showLoginRegister();
       } else if (e.target.classList.contains("editButton")) {
         message.textContent = "";
@@ -39,7 +41,7 @@ export const handleJobs = () => {
   });
 };
 
-export const showJobs = async () => {
+export const showSpreadsheets = async () => {
   try {
     enableInput(false);
 
@@ -52,11 +54,11 @@ export const showJobs = async () => {
     });
 
     const data = await response.json();
-    let children = [jobsTableHeader];
+    let children = [spreadsheetsTableHeader];
 
     if (response.status === 200) {
       if (data.count === 0) {
-        jobsTable.replaceChildren(...children); // clear this for safety
+        spreadsheetsTable.replaceChildren(...children); // clear this for safety
       } else {
         for (let i = 0; i < data.spreadsheets.length; i++) {
           let rowEntry = document.createElement("tr");
@@ -72,7 +74,7 @@ export const showJobs = async () => {
           rowEntry.innerHTML = rowHTML;
           children.push(rowEntry);
         }
-        jobsTable.replaceChildren(...children);
+        spreadsheetsTable.replaceChildren(...children);
       }
     } else {
       message.textContent = data.msg;
@@ -82,5 +84,5 @@ export const showJobs = async () => {
     message.textContent = "A communication error occurred.";
   }
   enableInput(true);
-  setDiv(jobsDiv);
+  setDiv(spreadsheetsDiv);
 };

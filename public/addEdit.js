@@ -1,29 +1,29 @@
 import { enableInput, inputEnabled, message, setDiv, token } from "./index.js";
-import { showJobs } from "./jobs.js";
+import { showSpreadsheets } from "./spreadsheets.js";
 
 let addEditDiv = null;
-let company = null;
-let position = null;
-let status = null;
-let addingJob = null;
+let googleSpreadsheetId = null;
+let spreadsheetName = null;
+let mappings = null;
+let addingSpreadsheet = null;
 
 export const handleAddEdit = () => {
-  addEditDiv = document.getElementById("edit-job");
-  company = document.getElementById("company");
-  position = document.getElementById("position");
-  status = document.getElementById("status");
-  addingJob = document.getElementById("adding-job");
+  addEditDiv = document.getElementById("edit-spreadsheet");
+  googleSpreadsheetId = document.getElementById("google-spreadsheet-id");
+  spreadsheetName = document.getElementById("spreadsheet-name");
+  mappings = document.getElementById("mappings");
+  addingSpreadsheet = document.getElementById("adding-spreadsheet");
   const editCancel = document.getElementById("edit-cancel");
 
   addEditDiv.addEventListener("click", async (e) => {
     if (inputEnabled && e.target.nodeName === "BUTTON") {
-      if (e.target === addingJob) {
+      if (e.target === addingSpreadsheet) {
         enableInput(false);
 
         let method = "POST";
         let url = "/api/v1/spreadsheets";
 
-        if (addingJob.textContent === "update") {
+        if (addingSpreadsheet.textContent === "update") {
           method = "PATCH";
           url = `/api/v1/spreadsheets/${addEditDiv.dataset.id}`;
         }
@@ -36,9 +36,9 @@ export const handleAddEdit = () => {
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-              googleSpreadsheetId: company.value,
-              name: position.value,
-              mappings: status.value,
+              googleSpreadsheetId: googleSpreadsheetId.value,
+              name: spreadsheetName.value,
+              mappings: mappings.value,
             }),
           });
 
@@ -46,16 +46,16 @@ export const handleAddEdit = () => {
           if (response.status === 200 || response.status === 201) {
             if (response.status === 200) {
               // a 200 is expected for a successful update
-              message.textContent = "The job entry was updated.";
+              message.textContent = "The spreadsheet entry was updated.";
             } else {
               // a 201 is expected for a successful create
-              message.textContent = "The job entry was created.";
+              message.textContent = "The spreadsheet entry was created.";
             }
 
-            company.value = "";
-            position.value = "";
-            status.value = "pending";
-            showJobs();
+            googleSpreadsheetId.value = "";
+            spreadsheetName.value = "";
+            mappings.value = "pending";
+            showSpreadsheets();
           } else {
             message.textContent = data.msg;
           }
@@ -66,18 +66,18 @@ export const handleAddEdit = () => {
         enableInput(true);
       } else if (e.target === editCancel) {
         message.textContent = "";
-        showJobs();
+        showSpreadsheets();
       }
     }
   });
 };
 
-export const showAddEdit = async (jobId) => {
-  if (!jobId) {
-    company.value = "";
-    position.value = "";
-    status.value = "pending";
-    addingJob.textContent = "add";
+export const showAddEdit = async (spreadsheetId) => {
+  if (!spreadsheetId) {
+    googleSpreadsheetId.value = "";
+    spreadsheetName.value = "";
+    mappings.value = "pending";
+    addingSpreadsheet.textContent = "add";
     message.textContent = "";
 
     setDiv(addEditDiv);
@@ -85,7 +85,7 @@ export const showAddEdit = async (jobId) => {
     enableInput(false);
 
     try {
-      const response = await fetch(`/api/v1/spreadsheets/${jobId}`, {
+      const response = await fetch(`/api/v1/spreadsheets/${spreadsheetId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -96,23 +96,23 @@ export const showAddEdit = async (jobId) => {
       const data = await response.json();
       console.log("DATA: ", data);
       if (response.status === 200) {
-        company.value = data.spreadsheet.googleSpreadsheetId;
-        position.value = data.spreadsheet.name;
-        status.value = data.spreadsheet.mappings;
-        addingJob.textContent = "update";
+        googleSpreadsheetId.value = data.spreadsheet.googleSpreadsheetId;
+        spreadsheetName.value = data.spreadsheet.name;
+        mappings.value = data.spreadsheet.mappings;
+        addingSpreadsheet.textContent = "update";
         message.textContent = "";
-        addEditDiv.dataset.id = jobId;
+        addEditDiv.dataset.id = spreadsheetId;
 
         setDiv(addEditDiv);
       } else {
         // might happen if the list has been updated since last display
-        message.textContent = "The jobs entry was not found";
-        showJobs();
+        message.textContent = "The spreadsheets entry was not found";
+        showSpreadsheets();
       }
     } catch (err) {
       console.log(err);
       message.textContent = "A communications error has occurred.";
-      showJobs();
+      showSpreadsheets();
     }
 
     enableInput(true);
