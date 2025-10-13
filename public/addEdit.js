@@ -118,3 +118,28 @@ export const showAddEdit = async (spreadsheetId) => {
     enableInput(true);
   }
 };
+
+export const deleteSpreadsheet = async (spreadsheetId) => {
+  if (spreadsheetId) {
+    enableInput(false);
+
+    try {
+      const response = await fetch(`/api/v1/spreadsheets/${spreadsheetId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      showSpreadsheets();
+    } catch (err) {
+      console.log(err);
+      message.textContent = "Your todo couldn't be deleted.";
+      showSpreadsheets();
+    }
+
+    enableInput(true);
+  }
+};

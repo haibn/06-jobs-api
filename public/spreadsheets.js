@@ -7,7 +7,7 @@ import {
   enableInput,
 } from "./index.js";
 import { showLoginRegister } from "./loginRegister.js";
-import { showAddEdit } from "./addEdit.js";
+import { showAddEdit, deleteSpreadsheet } from "./addEdit.js";
 
 let spreadsheetsDiv = null;
 let spreadsheetsTable = null;
@@ -36,6 +36,9 @@ export const handleSpreadsheets = () => {
       } else if (e.target.classList.contains("editButton")) {
         message.textContent = "";
         showAddEdit(e.target.dataset.id);
+      } else if (e.target.classList.contains("deleteButton")) {
+        message.textContent = "Your todo has been deleted successfully.";
+        deleteSpreadsheet(e.target.dataset.id);
       }
     }
   });
